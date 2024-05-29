@@ -64,7 +64,21 @@ jobs:
     - name: Deploy to Minikube (with error handling)
       run: |
         kubectl apply -f deployment.yaml --validate=false
-      exit-codes: [0]  # Fail job if deployment fails
+  # Choose one of the following error handling approaches:
+
+  # Option 1: Check exit code in the same step (using if statement)
+      if [ ${{ steps.deploy.exit_code }} -ne 0 ]; then
+        echo "Deployment failed!"
+        exit 1
+      fi
+
+  # Option 2: Check exit code in a separate step
+  # - name: Check deployment status (Optional)
+  #   run: |
+  #     if [ ${{ steps.deploy.exit_code }} -ne 0 ]; then
+  #       echo "Deployment failed!"
+  #       exit 1
+  #     fi
 
     - name: Get Service NodePort (Optional)
       id: get-nodeport
