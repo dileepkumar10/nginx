@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: dileep10/my-image-name:latest
+        image: myi:latest  # Update the image name here
         ports:
         - containerPort: 80
 ---
