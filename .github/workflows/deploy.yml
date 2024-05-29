@@ -81,27 +81,6 @@ jobs:
         #       exit 1
         #     fi
 
-    - name: Get Service NodePort (Optional)
-      id: get-nodeport
-      run: |
-        # Check deployment status (optional)
-        kubectl get deployments
-
-        # Debug: Echo message to confirm execution of this step
-        echo "Attempting to retrieve NodePort..."
-
-        # Get NodePort from the service named "my-service"
-        node_port=$(kubectl get service my-service -o jsonpath="{.items[0].spec.ports[0].nodePort}")
-
-        # Debug: Echo retrieved NodePort
-        echo "Retrieved NodePort: $node_port"
-
-        if [[ -z "$node_port" ]]; then
-          echo "Failed to retrieve NodePort!"
-          exit 1
-        fi
-        echo "Retrieved NodePort: $node_port"
-
     - name: Test Application (Optional)
       run: |
         if [[ -z "${{ steps.get-nodeport.outputs.node_port }}" ]]; then
