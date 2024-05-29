@@ -11,6 +11,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build the Docker image
       run: |
         docker build . -f Dockerfile -t dileep10/my-image-name:latest
@@ -18,8 +29,9 @@ jobs:
     - name: Push the Docker image to Docker Hub (Optional)
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       run: |
-        echo "$DOCKER_PASSWORD" | docker login -u "dileep10" --password-stdin
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         docker push dileep10/my-image-name:latest  # Optional step
 
   deploy:
@@ -29,27 +41,42 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Install Minikube
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+    - name: Start Minikube
+      run: |
+        sudo minikube start --driver=none
+
+    - name: Verify Minikube Status
+      run: minikube status
+
+    - name: Use Minikube kubectl context
+      run: |
+        kubectl config use-context minikube
+
     - name: Verify working directory (Optional)
       run: pwd
 
     - name: Check for deployment.yaml
       run: ls deployment.yaml
 
-    - name: Use Minikube kubectl context (Optional)
-      uses: Azure/login@v1  # This step can be replaced with a custom script
-        with:
-          clientSecret: ${{ secrets.AZURE_AUTH_TOKEN }}  # Replace with your actual secret
-          defaults: kubectl-context=minikube  # Sets the context to minikube
-
     - name: Deploy to Minikube
       run: |
         kubectl apply -f deployment.yaml --validate=false
 
     - name: Get Service NodePort (Optional)
+      id: get-nodeport
       run: |
         kubectl get service -o jsonpath="{.items[0].spec.ports[0].nodePort}"
-        id: get-nodeport
 
     - name: Test Application (Optional)
       run: |
-        curl http://localhost:${{ steps.get-nodeport.outputs.get_nodeport }}  # Access service (if NodePort retrieved)
+        curl http://localhost:${{ steps.get-nodeport.outputs.nodePort }}  # Access service (if NodePort retrieved)
