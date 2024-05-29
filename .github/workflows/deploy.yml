@@ -81,6 +81,11 @@ jobs:
         #       exit 1
         #     fi
 
+    - name: Get service name (assuming single service)
+      run: |
+        service_name=$(kubectl get services -o jsonpath="{.items[0].metadata.name}")
+        echo "## @output(service_name=${service_name})"
+
     - name: Test Application (Optional)
       run: |
         if [[ -z "${{ steps.get-nodeport.outputs.node_port }}" ]]; then
