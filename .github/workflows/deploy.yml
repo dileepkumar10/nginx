@@ -87,8 +87,14 @@ jobs:
         # Check deployment status (optional)
         kubectl get deployments
 
+        # Debug: Echo message to confirm execution of this step
+        echo "Attempting to retrieve NodePort..."
+
         # Get NodePort from the service named "my-service"
         node_port=$(kubectl get service my-service -o jsonpath="{.items[0].spec.ports[0].nodePort}")
+
+        # Debug: Echo retrieved NodePort
+        echo "Retrieved NodePort: $node_port"
 
         if [[ -z "$node_port" ]]; then
           echo "Failed to retrieve NodePort!"
