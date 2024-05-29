@@ -41,6 +41,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Start Minikube
+      run: |
+        minikube start --driver=none --profile=minikube
+
     - name: Verify Minikube Status (Optional)
       run: minikube status  # Check if Minikube is already running
 
