@@ -41,13 +41,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Verify Minikube Status (Optional)
+      run: minikube status  # Check if Minikube is already running
+
     - name: Install Kubectl (Optional, if not already installed)
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'  # Adjust version if needed
-
-    - name: Verify Minikube Status
-      run: minikube status
 
     - name: Use Minikube kubectl context
       run: kubectl config use-context minikube
