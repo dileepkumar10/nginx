@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: myi:latest  # Update the image name here
+        image: my-image1  # Update the image name here
         ports:
         - containerPort: 80
 ---
