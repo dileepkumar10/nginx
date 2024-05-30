@@ -55,3 +55,6 @@ jobs:
         run: |
           minikube start
           minikube kubectl -- apply -f deployment.yaml
+      - name: Test
+        run:  |
+          minikube service list
