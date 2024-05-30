@@ -12,7 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Setup Minikube (optional)
-        uses: manusa/actions-setup-minikube@v2.11.0  # Or another preferred action
+        uses: manusa/actions-setup-minikube@v2.11.0
+        with:
+          minikube_version: 'v1.33.0'# Or another preferred action
         
   # Build and push image (or build locally, comment out push step)
   build:
